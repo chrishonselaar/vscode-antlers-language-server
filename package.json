@@ -1,219 +1,228 @@
 {
-    "name": "vscode-antlers",
-    "displayName": "Antlers Toolbox",
-    "description": "Provides Antlers syntax highlighting, formatting, error reporting, project-specific suggestions, and more.",
-    "author": "John Koster",
-    "license": "MIT",
-    "version": "2.4.1",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Stillat/vscode-antlers-language-server"
-    },
-    "publisher": "stillat-llc",
-    "icon": "toolbox-icon.png",
-    "keywords": [
-        "statamic",
-        "intellisense",
-        "snippet",
-        "highlighter",
-        "beautify",
-        "antlers",
-        "template"
-    ],
-    "categories": [
-        "Programming Languages",
-        "Snippets",
-        "Formatters"
-    ],
-    "engines": {
-        "vscode": "^1.43.0"
-    },
-    "activationEvents": [
-        "onLanguage:html",
-        "onView:antlers.projectExplorer"
-    ],
-    "main": "./client/out/extension",
-    "contributes": {
-        "languages": [
-            {
-                "id": "html",
-                "aliases": [
-                    "HTML (Statamic Antlers)",
-                    "antlers"
-                ],
-                "extensions": [
-                    ".antlers.html",
-                    ".antlers.php",
-                    ".antlers.xml",
-                    ".html",
-                    ".htm",
-                    ".xhtml"
-                ],
-                "configuration": "./client/antlers.configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "html",
-                "scopeName": "text.html.statamic",
-                "path": "./client/syntaxes/antlers.json",
-                "embeddedLanguages": {
-                    "meta.embedded.block.frontmatter": "yaml",
-                    "source.php": "php"
-                }
-            }
-        ],
-        "semanticTokenScopes": [
-            {
-                "scopes": {
-                    "antlersAttribute": [
-                        "entity.other.attribute-name"
-                    ]
-                }
-            }
-        ],
-        "configuration": {
-            "type": "object",
-            "title": "Antlers configuration",
-            "properties": {
-                "antlersOverrideHtmlComments": {
-                    "scope": "resource",
-                    "type": "boolean",
-                    "default": false,
-                    "description": "When enabled Antlers style block comments will be used in HTML contexts."
-                },
-                "antlersLanguageServer.trace.server": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "off",
-                    "description": "Traces the communication between VS Code and the language server."
-                },
-                "antlersLanguageServer.showGeneralSnippetCompletions": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "When enabled general Antlers snippets will appear in completion suggestions outside of Antlers tags."
-                },
-                "antlersLanguageServer.diagnostics.reportDiagnostics": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "When enabled, Antlers Toolbox will report syntax errors and warnings."
-                },
-                "antlersLanguageServer.diagnostics.warnOnDynamicCssClassNames": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "When enabled, Antlers Toolbox will check for dynamic CSS class names and emit warnings."
-                },
-                "antlersLanguageServer.diagnostics.validateTagParameters": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": true,
-                    "description": "When enabled, Antlers Toolbox will validate known tag parameters."
-                },
-                "antlersLanguageServer.languageVersion": {
-                    "scope": "window",
-                    "type": "string",
-                    "enum": [
-                        "regex",
-                        "runtime"
-                    ],
-                    "default": "regex",
-                    "description": "The Antlers language version to use."
-                },
-                "antlersLanguageServer.formatFrontMatter": {
-                    "scope": "window",
-                    "type": "boolean",
-                    "default": "false",
-                    "title": "Formatter: Format Front Matter",
-                    "description": "Controls whether YAML frontmatter is formatted."
-                },
-                "antlersLanguageServer.formatterIgnoreExtensions": {
-                    "scope": "window",
-                    "type": "array",
-                    "default": [],
-                    "title": "Formatter: Ignore File Extensions",
-                    "description": "A list of file extensions the Antlers formatter should ignore."
-                }
-            }
-        },
-        "commands": [
-            {
-                "command": "extension.antlersLanguageServer.reloadProjectDetails",
-                "title": "Reload Statamic Project Details",
-                "category": "Antlers"
-            },
-            {
-                "command": "extension.antlersLanguageServer.debugEditorContents",
-                "title": "Debug Antlers",
-                "category": "Antlers",
-                "enablement": "!inDebugMode",
-                "icon": "$(debug-alt)"
-            }
-        ],
-        "breakpoints": [
-            {
-                "language": "antlers"
-            }
-        ],
-        "debuggers": [
-            {
-                "type": "antlers",
-                "languages": [
-                    "antlers"
-                ],
-                "label": "Antlers Debug"
-            }
-        ],
-        "views": {
-            "explorer": [
-                {
-                    "id": "antlers.projectExplorer",
-                    "name": "Blueprint Explorer",
-                    "contextualTitle": "Statamic Blueprint Explorer",
-                    "type": "tree",
-                    "icon": "explorer.svg",
-                    "when": "resourceExtname == .html"
-                }
-            ]
-        }
-    },
-    "bundleDependencies": false,
-    "scripts": {
-        "vscode:prepublish": "npm run compile && npm run build:webview",
-        "compile": "tsc -b",
-        "bundle:format_cli": "npm run compile && npm run esbuild:format_cli",
-        "esbuild:format_cli": "esbuild ./server/src/formatting/cli/index.ts --bundle --minify --outfile=./formatcli/package/cli.js --format=cjs --platform=node",
-        "bundle:antlersls": "npm run compile && npm run esbuild:antlersls",
-        "esbuild:antlersls": "esbuild ./server/src/server.ts --bundle --minify --outfile=./antlersls/server.js --format=cjs --platform=node",
-        "bundle:prettier": "npm run compile && npm run esbuild:prettier",
-        "esbuild:prettier": "esbuild ./server/src/formatting/prettier/plugin.ts --bundle --minify --outfile=./formatcli/prettier-plugin-antlers/plugin.js --format=cjs --platform=node --external:prettier",
-        "watch": "tsc -b -w",
-        "start:webview": "cd docsui && npm run start",
-        "build:webview": "cd docsui && npm run build",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd ../docsui && npm install && cd ..",
-        "bundle:everything": "npm run bundle:format_cli && npm run bundle:antlersls && npm run bundle:prettier",
-        "test:server": "npm run compile && mocha ./server/out/test/*.js -- -u tdd"
-    },
-    "devDependencies": {
-        "@types/mocha": "^8.2.3",
-        "@types/node": "^12.20.21",
-        "@typescript-eslint/eslint-plugin": "^4.29.3",
-        "@typescript-eslint/parser": "^4.29.3",
-        "esbuild": "^0.14.14",
-        "eslint": "^8.19.0",
-        "mocha": "^10.0.0",
-        "typescript": "^4.4.2"
-    },
-    "dependencies": {
-        "js-yaml": "^4.1.0",
-        "semver": "^7.3.5",
-        "ts-md5": "^1.2.9"
-    }
+	"name": "vscode-antlers",
+	"displayName": "Antlers Toolbox",
+	"description": "Provides Antlers syntax highlighting, formatting, error reporting, project-specific suggestions, and more.",
+	"author": "John Koster",
+	"license": "MIT",
+	"version": "2.4.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Stillat/vscode-antlers-language-server"
+	},
+	"publisher": "stillat-llc",
+	"icon": "toolbox-icon.png",
+	"keywords": [
+		"statamic",
+		"intellisense",
+		"snippet",
+		"highlighter",
+		"beautify",
+		"antlers",
+		"template"
+	],
+	"categories": [
+		"Programming Languages",
+		"Snippets",
+		"Formatters"
+	],
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"activationEvents": [
+		"onLanguage:antlers",
+		"onView:antlers.projectExplorer"
+	],
+	"main": "./client/out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "antlers",
+				"aliases": [
+					"HTML (Statamic Antlers)",
+					"antlers"
+				],
+				"extensions": [
+					".antlers.html",
+					".antlers.php",
+					".antlers.xml"
+		
+				],
+				"configuration": "./client/antlers.configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "antlers",
+				"scopeName": "text.html.statamic",
+				"path": "./client/syntaxes/antlers.json",
+				"embeddedLanguages": {
+					"meta.embedded.block.frontmatter": "yaml",
+					"source.php": "php"
+				}
+			}
+		],
+		"semanticTokenScopes": [
+			{
+				"scopes": {
+					"antlersAttribute": [
+						"entity.other.attribute-name"
+					]
+				}
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Antlers configuration",
+			"properties": {
+				"antlersOverrideHtmlComments": {
+					"scope": "resource",
+					"type": "boolean",
+					"default": false,
+					"description": "When enabled Antlers style block comments will be used in HTML contexts."
+				},
+				"antlersLanguageServer.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "off",
+					"description": "Traces the communication between VS Code and the language server."
+				},
+				"antlersLanguageServer.showGeneralSnippetCompletions": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "When enabled general Antlers snippets will appear in completion suggestions outside of Antlers tags."
+				},
+				"antlersLanguageServer.diagnostics.reportDiagnostics": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "When enabled, Antlers Toolbox will report syntax errors and warnings."
+				},
+				"antlersLanguageServer.diagnostics.warnOnDynamicCssClassNames": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "When enabled, Antlers Toolbox will check for dynamic CSS class names and emit warnings."
+				},
+				"antlersLanguageServer.diagnostics.validateTagParameters": {
+					"scope": "window",
+					"type": "boolean",
+					"default": true,
+					"description": "When enabled, Antlers Toolbox will validate known tag parameters."
+				},
+				"antlersLanguageServer.languageVersion": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"regex",
+						"runtime"
+					],
+					"default": "regex",
+					"description": "The Antlers language version to use."
+				},
+				"antlersLanguageServer.formatFrontMatter": {
+					"scope": "window",
+					"type": "boolean",
+					"default": "false",
+					"title": "Formatter: Format Front Matter",
+					"description": "Controls whether YAML frontmatter is formatted."
+				},
+				"antlersLanguageServer.formatterIgnoreExtensions": {
+					"scope": "window",
+					"type": "array",
+					"default": [],
+					"title": "Formatter: Ignore File Extensions",
+					"description": "A list of file extensions the Antlers formatter should ignore."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "extension.antlersLanguageServer.reloadProjectDetails",
+				"title": "Reload Statamic Project Details",
+				"category": "Antlers"
+			},
+			{
+				"command": "extension.antlersLanguageServer.debugEditorContents",
+				"title": "Debug Antlers",
+				"category": "Antlers",
+				"enablement": "!inDebugMode",
+				"icon": "$(debug-alt)"
+			}
+		],
+		"breakpoints": [
+			{
+				"language": "antlers"
+			}
+		],
+		"debuggers": [
+			{
+				"type": "antlers",
+				"languages": [
+					"antlers"
+				],
+				"label": "Antlers Debug"
+			}
+		],
+		"views": {
+			"explorer": [
+				{
+					"id": "antlers.projectExplorer",
+					"name": "Blueprint Explorer",
+					"contextualTitle": "Statamic Blueprint Explorer",
+					"type": "tree",
+					"icon": "explorer.svg",
+					"when": "resourceExtname == .html"
+				}
+			]
+		}
+	},
+	"bundleDependencies": false,
+	"scripts": {
+		"vscode:prepublish": "npm run compile && npm run build:webview",
+		"compile": "tsc -b",
+		"bundle:format_cli": "npm run compile && npm run esbuild:format_cli",
+		"esbuild:format_cli": "esbuild ./server/src/formatting/cli/index.ts --bundle --minify --outfile=./formatcli/package/cli.js --format=cjs --platform=node",
+		"bundle:antlersls": "npm run compile && npm run esbuild:antlersls",
+		"esbuild:antlersls": "esbuild ./server/src/server.ts --bundle --minify --outfile=./antlersls/server.js --format=cjs --platform=node",
+		"bundle:prettier": "npm run compile && npm run esbuild:prettier",
+		"esbuild:prettier": "esbuild ./server/src/formatting/prettier/plugin.ts --bundle --minify --outfile=./formatcli/prettier-plugin-antlers/plugin.js --format=cjs --platform=node --external:prettier",
+		"watch": "tsc -b -w",
+		"start:webview": "cd docsui && npm run start",
+		"build:webview": "cd docsui && npm run build",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ../docsui && npm install && cd ..",
+		"bundle:everything": "npm run bundle:format_cli && npm run bundle:antlersls && npm run bundle:prettier",
+		"test:server": "npm run compile && mocha ./server/out/test/*.js -- -u tdd"
+	},
+	"devDependencies": {
+		"@types/mocha": "^8.2.3",
+		"@types/node": "^12.20.21",
+		"@typescript-eslint/eslint-plugin": "^4.29.3",
+		"@typescript-eslint/parser": "^4.29.3",
+		"esbuild": "^0.14.14",
+		"eslint": "^8.19.0",
+		"mocha": "^10.0.0",
+		"typescript": "^4.4.2"
+	},
+	"dependencies": {
+		"js-yaml": "^4.1.0",
+		"semver": "^7.3.5",
+		"ts-md5": "^1.2.9"
+	},
+	"__metadata": {
+		"id": "9b3c0222-1b98-49f7-a076-207f97fe5868",
+		"publisherId": "4bc5818f-ac9b-4700-96b0-7c9a89555fad",
+		"publisherDisplayName": "Stillat LLC",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"updated": true,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1671097156883,
+		"preRelease": false
+	}
 }
